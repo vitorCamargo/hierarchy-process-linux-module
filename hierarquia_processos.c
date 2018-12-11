@@ -1,5 +1,4 @@
 #include <linux/sched/signal.h>
-#include <linux/memcontrol.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/printk.h>
@@ -19,24 +18,24 @@ void verificaFilhos(struct task_struct *task, int hierarquia) {
     size_t process_filho_counter = 0;
     int aux = hierarquia;
 
-    printk(KERN_NOTICE "%*s--> (%s) [%d]\n", 2*hierarquia, "", task->comm, task->pid);
+    printk(KERN_NOTICE "%*s-%ld-> (%s) [%d] [%d]\n", (4*hierarquia), "", task->parent->state, task->comm, task->pid, task->parent->tgid);
 
     for_each_process(filho) {
-        if(task->pid == filho->real_parent->pid) {
-            verificaFilhos(filho, ++hierarquia);
+        if(task->pid == filho->parent->tgid) {
             ++process_filho_counter;
+            verificaFilhos(filho, (hierarquia+1));
         }
     }
-    printk(KERN_NOTICE "%*sPROCESSO %s: qtd filhos: %zu\n\n", 2*aux, "", task->comm, process_filho_counter);
+    if(process_filho_counter > 0) printk(KERN_NOTICE "%*sPROCESSO %s [%d]: qtd filhos: %zu\n\n", (4*aux), "", task->comm, task->pid, process_filho_counter);
 }
 
 static int __init ex_init(void) {
     struct task_struct *task;
     size_t process_counter = 0;
-    printk(KERN_NOTICE "NUM_HIERA --> (COMM) [PID]\n\n");    
+    printk(KERN_NOTICE "--> (COMM) [PID]\n\n");    
 
     for_each_process(task) {
-        verificaFilhos(task, 0);
+        if(task->parent->tgid == 0) verificaFilhos(task, 0);
         ++process_counter;
     }
     printk(KERN_NOTICE "== Number of process: %zu\n\n\n\n\n", process_counter);
