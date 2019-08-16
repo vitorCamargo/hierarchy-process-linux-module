@@ -1,5 +1,5 @@
 # Linux Module for Hierarchy and Process Counting
-✌️ Assignment for 'Operating Systems' subject about Linux Module
+👨🏽‍💻✌️ Assignment for 'Operating Systems' subject about Linux Module
 
 ## How to Use
 First of all, you need to compile the program, just need to use the following command (make sure that you have makefile installed in your computer):
